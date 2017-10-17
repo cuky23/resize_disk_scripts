@@ -8,7 +8,7 @@ Then it runs partprobe to tell OS about changes with out reboot, then runs the s
 I use this with vagrant as a post shell-provision script, so that I can create mini diskimages with packer, then resize them on 1st boot.
 works well for me.
 
-
+```
 START
 ==> mail: NR   START      END  SECTORS SIZE NAME UUID
 ==> mail:  1    2048   999423   997376 487M      18fd3c1f-01
@@ -19,7 +19,8 @@ FINAL result
 ==> mail: NR   START      END  SECTORS  SIZE NAME UUID
 ==> mail:  1    2048   999423   997376  487M      18fd3c1f-01
 ==> mail:  2  999424 67108863 66109440 31.5G      18fd3c1f-02
-==> mail:  5 1001472 67108863 66107392 31.5G      18fd3c1f-05
+==> mail:  5 1001472 67108863 66107392 31.5G      18fd3c1f-05
+```
 
 feel free to fork and use
 
