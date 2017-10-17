@@ -1,0 +1,67 @@
+#!/bin/bash
+#http://ryandoyle.net/posts/expanding-a-lvm-partition-to-fill-remaining-drive-space/
+
+LVMTYPE=8e
+fail=0
+DISKCOUNT=$(fdisk -l |grep '^Disk /' |grep -v ram |grep -v mapper|wc -l)
+DISKNAME=$(fdisk -l |grep '^Disk /' |grep -v ram |grep -v mapper|awk '{print$2}' |sed 's/://' )
+LVMPART=$(fdisk -l |grep '^/dev/' |grep "$LVMTYPE" |grep -v '\*'|awk '{print$1}')
+VG=$(mount |grep vg |grep root|awk '{print$1}')
+
+echo "disk ajustments BEFORE"
+partx -s $DISKNAME
+echo "`basename $0` :: diskname $DISKNAME lvm $LVMPART vg $VG lvmtype $LVMTYPE"
+if [[ $DISKCOUNT -eq 1 ]]
+then
+	fail=0
+else 
+	fail=1
+fi
+echo "DISKCOUNT $DISKCOUNT fail $fail"
+if [[ $fail -eq 0 ]]
+then
+fdisk -l |grep $LVMTYPE 
+if [[ $? -eq 0 ]]
+then 
+		echo "Resizing root as it same as kickstart disk"
+		fdisk $DISKNAME <<LVM1 
+d
+2
+
+
+n
+e
+2
+
+p
+w
+
+p
+n
+
+
+p
+w
+t
+5
+8e
+w
+p
+LVM1
+		echo "running partprobe to rescan disks"
+		partprobe  2>/dev/null 1>/dev/null
+		partprobe -s
+		echo "resizing with pvresize "
+		pvresize $LVMPART 2>/dev/null 1>/dev/null
+		
+		echo "resizing with lvextend"
+		lvextend -l +100%FREE  $VG 2>/dev/null 1>/dev/null
+		echo "resizing with resize2fs"
+		resize2fs $VG 2>/dev/null 1>/dev/null
+		echo "disk ajustments AFTER"
+		partx -s $DISKNAME
+else
+	echo "not LVM based for tradional resize may worki fix it it should be"
+fi
+
+fi
