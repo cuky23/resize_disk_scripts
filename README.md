@@ -3,7 +3,7 @@ they are fun fun fun,   ubuntu16_lvm works, these were created so that packer ca
 
 Break down of all that fdisk stuff. This will delete all partitions past 2 and recreate them bigger, it then forces the partition type of 5 back to LINUX LVM
 
-Then it runs partprobe to tell OS about changes with out reboot, the runs the standard extend disk stuff.
+Then it runs partprobe to tell OS about changes with out reboot, then runs the standard extend disk stuff.
 
 I use this with vagrant as a post shell-provision script, so that I can create mini diskimages with packer, then resize them on 1st boot.
 works well for me.
